@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ group.name }}</h1>
+<p>{{ group.description }}</p>
+
+<!-- Post form (for professors) -->
+{% if request.user.role == 'professor' %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Post</button>
+</form>
+{% endif %}
+
+<!-- Posts list -->
+<div class="mt-4">
+  {% for post in posts %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5>{{ post.author.username }}</h5>
+      <p>{{ post.content }}</p>
+      <small>{{ post.created_at }}</small>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
