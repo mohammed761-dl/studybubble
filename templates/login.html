@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+  <div class="card login-card p-4 p-md-5 w-100" style="max-width: 420px;">
+    <h2 class="mb-4 text-center fw-semibold">Welcome Back 👋</h2>
+
+    <form method="post" class="needs-validation" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}:</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors|striptags }}:</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary w-100 mt-2">Login</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #fff;
+    color: #111;
+  }
+
+  .login-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+    background-color: #fff;
+  }
+
+  .login-card:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+    transform: translateY(-6px);
+  }
+
+  .form-label {
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  input, select, textarea {
+    border-radius: 6px;
+    padding: 0.6rem;
+    font-size: 0.95rem;
+    border: 1px solid #ccc;
+  }
+
+  input:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 0.2rem rgba(17, 17, 17, 0.1);
+  }
+
+  .btn-primary {
+    background-color: #111;
+    border-color: #111;
+    padding: 0.6rem;
+    font-weight: 500;
+  }
+
+  .btn-primary:hover {
+    background-color: #000;
+    border-color: #000;
+  }
+</style>
+{% endblock %}

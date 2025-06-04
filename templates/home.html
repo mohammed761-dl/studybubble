@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-white text-dark px-3">
+  <h1 class="display-4 fw-bold text-gradient mb-4 text-center">Welcome to StudyBubble</h1>
+  <p class="lead text-muted mb-5 text-center">Collaborate. Learn. Grow.</p>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4 w-100 justify-content-center">
+    <div class="col">
+      <div class="card border-0 shadow-sm h-100 hover-card">
+        <div class="card-body">
+          <h5 class="card-title fw-semibold">📚 Organize</h5>
+          <p class="card-text text-muted">Structure your notes, tasks, and sessions in a clean dashboard.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card border-0 shadow-sm h-100 hover-card">
+        <div class="card-body">
+          <h5 class="card-title fw-semibold">🤝 Collaborate</h5>
+          <p class="card-text text-muted">Work together in real-time with your peers and mentors.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card border-0 shadow-sm h-100 hover-card">
+        <div class="card-body">
+          <h5 class="card-title fw-semibold">📈 Track Progress</h5>
+          <p class="card-text text-muted">Stay on top of your goals with intuitive progress tracking.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="/admin" class="btn btn-dark mt-5 px-4 py-2 rounded-pill shadow hover-button">Go to Admin</a>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .text-gradient {
+    background: linear-gradient(90deg, #000, #444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hover-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border-radius: 1rem;
+  }
+
+  .hover-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .hover-button {
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .hover-button:hover {
+    background-color: #000;
+    color: #fff;
+    transform: scale(1.05);
+  }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+  }
+</style>
+{% endblock %}
