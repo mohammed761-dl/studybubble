@@ -1,18 +1,24 @@
 from django.shortcuts import render , redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 
 @login_required
 def home(request):
     return render(request, 'home.html')
 
 
+from django.contrib.auth import get_user_model, login
+from django.shortcuts import render, redirect
+from users.forms import CustomUserCreationForm
+
+User = get_user_model()
+
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login')  # Redirect to login after successful signup
+            user = form.save()
+            login(request, user)
+            return redirect('home')  # Replace with your home URL
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'signup.html', {'form': form})

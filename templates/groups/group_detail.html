@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h3 class="card-title">{{ group.name }}</h3>
+      <p class="card-text text-muted">{{ group.description }}</p>
+      <p class="card-text">
+        <small class="text-muted">Created by {{ group.created_by.username }} on {{ group.created_at|date:"M d, Y" }}</small>
+      </p>
+    </div>
+  </div>
+
+  {% if user.is_authenticated and user.role == 'professor' %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <textarea name="content" class="form-control" placeholder="Share something with your class..." rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+          <label>file</label>
+          <input type="file" name="file" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label>image</label>
+          <input type="file" name="image" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Post</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <h5 class="mb-3">Posts</h5>
+  {% for post in group.posts.all %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h6 class="text-muted">{{ post.author.username }} • {{ post.created_at|naturaltime }}</h6>
+      <p>{{ post.content }}</p>
+
+      {% if post.image %}
+        <img src="{{ post.image.url }}" class="img-fluid rounded mb-2">
+      {% endif %}
+      {% if post.file %}
+        <a href="{{ post.file.url }}" class="btn btn-sm btn-secondary" download>Download Attachment</a>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <p class="text-muted">No posts yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

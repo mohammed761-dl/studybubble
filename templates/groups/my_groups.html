@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}My Groups{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">My Groups</h2>
+  {% if groups %}
+    <div class="list-group">
+      {% for group in groups %}
+        <a href="{% url 'group-detail' group.pk %}" class="list-group-item list-group-item-action flex-column align-items-start mb-2">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ group.name }}</h5>
+          </div>
+          <p class="mb-1">{{ group.description|truncatechars:100 }}</p>
+          <small>Created by: {{ group.created_by.username }}</small>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info" role="alert">
+      You are not a member of any groups.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

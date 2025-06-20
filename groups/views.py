@@ -1,49 +1,82 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.contrib.auth.models import Group
-from django.views.generic import ListView, CreateView
-from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required
-from .models import Group
+from django.shortcuts import get_object_or_404, redirect
+from .models import Group, Post
 from django.views.generic import DetailView
-from .forms import PostForm
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
-class GroupDetailView(DetailView):
-    model = Group
-    template_name = 'groups/detail.html'
+def group_detail(request, pk):
+    group = get_object_or_404(Group, pk=pk)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = PostForm()
-        context['posts'] = self.object.post_set.all()
-        return context
+    # Handle post submission by professors
+    if request.method == 'POST':
+        if request.user.is_authenticated and request.user.role == 'professor':
+            content = request.POST.get('content', '')
+            file = request.FILES.get('file')
+            image = request.FILES.get('image')
+            Post.objects.create(
+                group=group,
+                author=request.user,
+                content=content,
+                file=file,
+                image=image
+            )
+            return redirect('group-detail', pk=pk)
 
-    def post(self, request, *args, **kwargs):
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.group = self.get_object()
-            post.author = request.user
-            post.save()
-        return self.get(request, *args, **kwargs)
+    posts = group.posts.order_by('-created_at')
+    return render(request, 'groups/group_detail.html', {
+        'group': group,
+        'posts': posts
+    })
+
 
 @login_required
-def join_group(request, group_id):
-    group = Group.objects.get(id=group_id)
-    group.members.add(request.user)
-    return redirect('group_list')
+def my_groups(request):
+    groups = Group.objects.filter(members=request.user)
+    return render(request, 'groups/my_groups.html', {'groups': groups})
 
-class GroupListView(ListView):
+
+@login_required
+def join_group(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    group.members.add(request.user)
+    return redirect('group-list')
+
+@login_required
+def leave_group(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    group.members.remove(request.user)
+    return redirect('group-list')
+
+class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
-    template_name = 'groups/list.html'
+    template_name = 'groups/group_detail.html'
+    context_object_name = 'group'
+
+class GroupListView(LoginRequiredMixin, ListView):
+    model = Group
+    context_object_name = 'groups'
+    template_name = 'groups/group_list.html'
 
 class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
-    fields = ['name', 'description', 'is_private']
-    template_name = 'groups/create.html'
-    success_url = '/groups/'
+    fields = ['name', 'description']
+    template_name = 'groups/group_create.html'
+    success_url = reverse_lazy('group-list')
 
     def form_valid(self, form):
-        form.instance.creator = self.request.user
+        form.instance.created_by = self.request.user
         return super().form_valid(form)
+
+class GroupUpdateView(LoginRequiredMixin, UpdateView):
+    model = Group
+    fields = ['name', 'description']
+    template_name = 'groups/group_update.html'
+    success_url = reverse_lazy('group-list')
+
+class GroupDeleteView(LoginRequiredMixin, DeleteView):
+    model = Group
+    template_name = 'groups/group_confirm_delete.html'
+    success_url = reverse_lazy('group-list')
